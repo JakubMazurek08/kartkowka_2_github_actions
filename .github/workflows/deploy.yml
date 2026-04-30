@@ -1,4 +1,4 @@
-name: Smoke test
+name: Kartkowka Workflow
 
 on:
   push:
@@ -17,6 +17,6 @@ jobs:
       - name: Write Summary
         if: always()
         run: |
-          echo "event: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "commit_hash: ${{ github.commit_hash }}" >> $GITHUB_SHA
-          echo "ref: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "event: ${{ github.event_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "ref: ${{ github.ref }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "commit_hash: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
