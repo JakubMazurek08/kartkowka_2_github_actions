@@ -1,7 +1,7 @@
 name: Smoke test
 
 on:
-  pull_request:
+  push:
 
 jobs:
   build_image:
