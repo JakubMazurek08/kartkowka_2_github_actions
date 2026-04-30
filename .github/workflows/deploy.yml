@@ -21,3 +21,47 @@ jobs:
           echo "event: ${{ github.event_name }}" >> "$GITHUB_STEP_SUMMARY"
           echo "ref: ${{ github.ref }}" >> "$GITHUB_STEP_SUMMARY"
           echo "commit_hash: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+
+  simulate_deploy:
+    name: Simulate simulate_deploy
+    runs-on: ubuntu-latest
+    needs: build_image
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Run Containers
+        run: docker compose up -d --build
+
+      - name: Health Check
+        run: curl -s http://localhost:8080/health | grep -q "ok"
+
+      - name: Save Docker Compose Logs
+        run: docker compose logs > docker-compose.log
+
+      - name: Save Docker Compose List
+        run: docker compose ps > docker-compose-ps.log
+
+      - name: Zip docker image
+        run: docker save go-docker:latest | gzip > go-docker.tar.gz
+
+      - name: Upload files
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-logs
+          path: docker-compose.log
+          path: docker-compose-ps.log
+          path: go-docker.tar.gz
+
+      - name: Write Summary
+        run: |
+          echo "Pomyslny Deploy" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Docker Cleanup
+        run: docker compose down -v
+
+        
