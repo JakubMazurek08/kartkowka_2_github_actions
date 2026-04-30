@@ -54,7 +54,9 @@ jobs:
         with:
           name: docker-compose-logs
           path: docker-compose.log
+          name: docker-compose-ps
           path: docker-compose-ps.log
+          name: go-docker
           path: go-docker.tar.gz
 
       - name: Write Summary
